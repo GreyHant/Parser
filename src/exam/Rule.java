@@ -20,4 +20,11 @@ public class Rule {
         this.resultFact = resultFact;
     }
 
+    @Override
+    public String toString() {
+        return "Rule{" +
+                "expression=" + expression.toString() +
+                ", resultFact='" + resultFact + '\'' +
+                '}';
+    }
 }

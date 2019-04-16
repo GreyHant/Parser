@@ -5,11 +5,10 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class ParserTest {
     private Parser r;
@@ -72,11 +71,10 @@ class ParserTest {
     @Test
     void readRulesNotFail() {
         try {
-
-            System.out.println(r.parseRule("Осень &&  Мокро || kek-> Грязно").toString());
-            r.parseRule("Осень && Мокро -> Грязно");
-            r.parseRule("Осень-> Мокро");
-            r.parseRule("Осень|| Мокро -> Прохладно");
+            System.out.println(r.parseRuleByMachine("Осень &&  Мокро || kek-> Грязно"));
+//            System.out.println(r.parseRuleByMachine("Осень-> Мокро"));
+            System.out.println(r.parseRuleByMachine("Осень|| Мокро -> Прохладно"));
+            System.out.println(r.parseRuleByMachine("Осень && Мокро -> Грязно"));
         } catch (InputException e) {
             System.out.println(e.getProblem());
 //            fail();
@@ -87,7 +85,7 @@ class ParserTest {
     @Test
     void readRulesFail() {
         try {
-            r.parseRule("1Осень|| Мокро -> Прохладно");
+            r.parseRule("Осень && Мокро -> _");
             fail();
         } catch (InputException e) {
             System.out.println(e.getProblem());

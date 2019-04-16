@@ -15,4 +15,8 @@ public class FactExpression implements Expression {
         this.fact = fact;
     }
 
+    @Override
+    public String toString() {
+        return fact;
+    }
 }

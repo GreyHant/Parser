@@ -99,12 +99,16 @@ class MainTest {
     @Test
     void mainBad9() {
         test("badtest9", "Ошибка формата данных в строке [2]." + System.lineSeparator());
-    }@Test
+    }
+
+    @Test
     void mainBad10() {
         test("badtest10", "Ошибка формата данных в строке [2]." + System.lineSeparator());
-    }@Test
+    }
+
+    @Test
     void mainBad11() {
-        test("badtest11", "Ошибка формата данных в строке [2]." + System.lineSeparator());
+        test("badtest11", "Ошибка формата данных в строке [1]." + System.lineSeparator());
     }
 
     @Test

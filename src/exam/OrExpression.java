@@ -18,4 +18,9 @@ public class OrExpression implements Expression {
     public OrExpression(List<Expression> expressionList) {
         this.expressionList = expressionList;
     }
+
+    @Override
+    public String toString() {
+        return "OrExpression=" + expressionList;
+    }
 }

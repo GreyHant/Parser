@@ -18,5 +18,10 @@ public class AndExpression implements Expression {
     public AndExpression(List<Expression> expressionList) {
         this.expressionList = expressionList;
     }
+
+    @Override
+    public String toString() {
+        return "AndExpression=" + expressionList;
+    }
 }
 
