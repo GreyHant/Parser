@@ -75,6 +75,8 @@ class ParserTest {
             System.out.println(r.parseRule("Осень-> Мокро"));
             System.out.println(r.parseRule("Осень|| Мокро -> Прохладно"));
             System.out.println(r.parseRule("Осень && Мокро -> Грязно"));
+            System.out.println(r.parseRule("A&&D||f&&H->Z"));
+
         } catch (InputException e) {
             System.out.println(e.getProblem());
 //            fail();
