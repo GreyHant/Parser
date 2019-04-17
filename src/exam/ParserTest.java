@@ -71,10 +71,10 @@ class ParserTest {
     @Test
     void readRulesNotFail() {
         try {
-            System.out.println(r.parseRuleByMachine("Осень &&  Мокро || kek-> Грязно"));
-//            System.out.println(r.parseRuleByMachine("Осень-> Мокро"));
-            System.out.println(r.parseRuleByMachine("Осень|| Мокро -> Прохладно"));
-            System.out.println(r.parseRuleByMachine("Осень && Мокро -> Грязно"));
+            System.out.println(r.parseRule("Осень &&  Мокро || kek-> Грязно"));
+            System.out.println(r.parseRule("Осень-> Мокро"));
+            System.out.println(r.parseRule("Осень|| Мокро -> Прохладно"));
+            System.out.println(r.parseRule("Осень && Мокро -> Грязно"));
         } catch (InputException e) {
             System.out.println(e.getProblem());
 //            fail();

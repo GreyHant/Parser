@@ -23,7 +23,7 @@ public class Rule {
     @Override
     public String toString() {
         return "Rule{" +
-                "expression=" + expression.toString() +
+                expression.toString() +
                 ", resultFact='" + resultFact + '\'' +
                 '}';
     }
