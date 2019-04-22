@@ -71,13 +71,18 @@ class ParserTest {
     @Test
     void readRulesNotFail() {
         try {
-            System.out.println(r.parseRule("Осень &&  Мокро || kek-> Грязно"));
-            System.out.println(r.parseRule("Осень-> Мокро"));
-            System.out.println(r.parseRule("Осень|| Мокро -> Прохладно"));
-            System.out.println(r.parseRule("Осень && Мокро -> Грязно"));
-            System.out.println(r.parseRule("A&&D||f&&H->Z"));
+//            System.out.println(r.parseRule("Осень &&  Мокро || kek-> Грязно"));
+//            System.out.println(r.parseRule("Осень-> Мокро"));
+            System.out.println(r.parseRule("(A&&(B||C))&&(D||E)->N"));
+            System.out.println(r.parseRule("D||(Осень&& (Мокро || C))-> Прохладно"));
+            System.out.println(r.parseRule("(Осень&& (Мокро || C))||D-> Прохладно"));
+            System.out.println(r.parseRule("Осень&& (Мокро || C)-> Прохладно"));
+            System.out.println(r.parseRule("(Осень|| Мокро) && C-> Прохладно"));
+//            System.out.println(r.parseRule("Осень && Мокро -> Грязно"));
+//            System.out.println(r.parseRule("A&&D||f&&H->Z"));
 
         } catch (InputException e) {
+            e.printStackTrace();
             System.out.println(e.getProblem());
 //            fail();
         }

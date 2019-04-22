@@ -35,20 +35,21 @@ class MainTest {
 
     @Test
     void mainGood() {
-
         test("goodtest", "A, B, C, жарко, Осень, f, G, I, J, K, L, M, Грязно, Мокро, Прохладно, _темно");
     }
 
     @Test
     void mainGood1() {
-
         test("goodtest1", "A, B, C, Осень, f, G, I, J, K, L, M, жарко1, Грязно, Мокро, Прохладно, Z, _темно");
     }
 
     @Test
     void mainGood2() {
-
         test("goodtest2", "A, B, C, жарко, Осень, f, G, I, J, K, L, M, Грязно, Мокро, Прохладно, Z, _темно");
+    }
+    @Test
+    void mainGood3() {
+        test("goodtest3", "A, B, E, F, G, N");
     }
 
     @Test

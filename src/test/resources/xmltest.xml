@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<format>
+    <rules>
+        <rule>
+            <or>
+                <and>
+                    <fact>
+
+                    </fact>
+                </and>
+                <fact>
+
+                </fact>
+            </or>
+            <resultfact>
+
+            </resultfact>
+        </rule>
+    </rules>
+    <facts>
+        <fact>
+
+        </fact>
+    </facts>
+</format>
