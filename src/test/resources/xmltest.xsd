@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:element name="format" type="formatType"/>
+  <xs:complexType name="andType">
+    <xs:sequence>
+      <xs:element name="fact" maxOccurs="unbounded" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="
+                        A
+                    "/>
+            <xs:enumeration value="
+                        B
+                    "/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="orType">
+    <xs:sequence>
+      <xs:element type="andType" name="and"/>
+      <xs:element type="xs:string" name="fact"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ruleType">
+    <xs:sequence>
+      <xs:element type="orType" name="or"/>
+      <xs:element type="xs:string" name="resultfact"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="rulesType">
+    <xs:sequence>
+      <xs:element type="ruleType" name="rule"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="factsType">
+    <xs:sequence>
+      <xs:element name="fact" maxOccurs="unbounded" minOccurs="0">
+        <xs:simpleType>
+          <xs:restriction base="xs:string">
+            <xs:enumeration value="
+            A
+        "/>
+            <xs:enumeration value="
+            C
+        "/>
+          </xs:restriction>
+        </xs:simpleType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="formatType">
+    <xs:sequence>
+      <xs:element type="rulesType" name="rules"/>
+      <xs:element type="factsType" name="facts"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>

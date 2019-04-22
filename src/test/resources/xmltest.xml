@@ -5,21 +5,27 @@
             <or>
                 <and>
                     <fact>
-
+                        A
+                    </fact>
+                    <fact>
+                        B
                     </fact>
                 </and>
                 <fact>
-
+                    C
                 </fact>
             </or>
             <resultfact>
-
+                D
             </resultfact>
         </rule>
     </rules>
     <facts>
         <fact>
-
+            A
+        </fact>
+        <fact>
+            C
         </fact>
     </facts>
 </format>
