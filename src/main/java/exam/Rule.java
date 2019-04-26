@@ -1,9 +1,17 @@
 package exam;
 
+import javax.xml.bind.annotation.*;
 import java.util.Set;
 
+@XmlRootElement(name = "rule")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class Rule {
 
+    @XmlElements({
+            @XmlElement(type = OrExpression.class, name = "or"),
+            @XmlElement(type = AndExpression.class, name = "and"),
+            @XmlElement(type = FactExpression.class, name = "expr")
+    })
     private Expression expression;
     private String resultFact;
 
@@ -20,6 +28,9 @@ public class Rule {
         this.resultFact = resultFact;
     }
 
+    public Rule() {
+    }
+
     @Override
     public String toString() {
         return "Rule{" +
@@ -27,4 +38,5 @@ public class Rule {
                 ", resultFact='" + resultFact + '\'' +
                 '}';
     }
+
 }

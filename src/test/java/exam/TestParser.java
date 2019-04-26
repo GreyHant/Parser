@@ -3,14 +3,19 @@ package exam;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
-class ParserTest {
+class TestParser {
     private Parser r;
 
     @BeforeEach
@@ -33,7 +38,7 @@ class ParserTest {
 //    }
 
     @Test
-    void regular(){
+    void regular() {
         String s = "осень1";
         Pattern p = Pattern.compile("^[_][\\d]*$");
         Matcher m = p.matcher(s);
@@ -72,37 +77,45 @@ class ParserTest {
     void readRulesNotFail() {
         try {
 //            System.out.println(r.parseRule("Осень &&  Мокро || kek-> Грязно"));
-//            System.out.println(r.parseRule("Осень-> Мокро"));
-            System.out.println(r.parseRule("(A&&(B||C))&&(D||E)->N"));
-            System.out.println(r.parseRule("D||(Осень&& (Мокро || C))-> Прохладно"));
-            System.out.println(r.parseRule("(Осень&& (Мокро || C))||D-> Прохладно"));
-            System.out.println(r.parseRule("Осень&& (Мокро || C)-> Прохладно"));
-            System.out.println(r.parseRule("(Осень|| Мокро) && C-> Прохладно"));
+//            System.out.println(r.parseRule("D||(A&& (B || C))-> E"));
+//            Rule rule = r.parseRule("(A&&(B||C))&&(D||E)->N");
+            Rule rule = r.parseRule("(A|| B) && C-> H");
+            Rule rule1 = r.parseRule("(A&&(B||C))&&(D||E)->N");
+//            System.out.println(rule);
+            Set<String> facts = new HashSet<>();
+            facts.add("A");
+            facts.add("B");
+            List<Rule> rules = new ArrayList<>();
+            rules.add(rule);
+            rules.add(rule1);
+            Model model = new Model(facts, rules);
+            JAXBContext context = JAXBContext.newInstance(Model.class);
+
+            Marshaller m = context.createMarshaller();
+            m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+            m.marshal(model, System.out);
+
+//            System.out.println(r.parseRule("(A|| B) && C-> H"));
+//            System.out.println(r.parseRule("D||(Осень&& (Мокро || C))-> Прохладно"));
+//            System.out.println(r.parseRule("(Осень&& (Мокро || C))||D-> Прохладно"));
+//            System.out.println(r.parseRule("Осень&& (Мокро || C)-> Прохладно"));
+//            System.out.println(r.parseRule("(Осень|| Мокро) && C-> Прохладно"));
 //            System.out.println(r.parseRule("Осень && Мокро -> Грязно"));
 //            System.out.println(r.parseRule("A&&D||f&&H->Z"));
 
-        } catch (InputException e) {
+        } catch (InputException | JAXBException e) {
             e.printStackTrace();
-            System.out.println(e.getProblem());
+//            System.out.println(e.getProblem());
 //            fail();
         }
 
     }
 
-    @Test
-    void readRulesFail() {
-        try {
-            r.parseRule("Осень && Мокро -> _");
-            fail();
-        } catch (InputException e) {
-            System.out.println(e.getProblem());
-        }
-
-    }
 
     @Test
     void readFile() {
-        File file = new File("src\\test.resources\\test.txt");
+        File file = new File("src\\testTxt.resources\\testTxt.txt");
 
         try {
             r.parseFile(file.getAbsolutePath());

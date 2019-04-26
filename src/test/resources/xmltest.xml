@@ -1,31 +1,52 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<format>
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model>
     <rules>
         <rule>
-            <or>
+            <and>
+                <or>
+                    <expr>
+                        <fact>A</fact>
+                    </expr>
+                    <expr>
+                        <fact>B</fact>
+                    </expr>
+                </or>
+                <expr>
+                    <fact>C</fact>
+                </expr>
+            </and>
+            <resultFact>H</resultFact>
+        </rule>
+        <rule>
+            <and>
                 <and>
-                    <fact>
-                        A
-                    </fact>
-                    <fact>
-                        B
-                    </fact>
+                    <expr>
+                        <fact>A</fact>
+                    </expr>
+                    <or>
+                        <expr>
+                            <fact>B</fact>
+                        </expr>
+                        <expr>
+                            <fact>C</fact>
+                        </expr>
+                    </or>
                 </and>
-                <fact>
-                    C
-                </fact>
-            </or>
-            <resultfact>
-                D
-            </resultfact>
+                <or>
+                    <expr>
+                        <fact>D</fact>
+                    </expr>
+                    <expr>
+                        <fact>E</fact>
+                    </expr>
+                </or>
+            </and>
+            <resultFact>N</resultFact>
         </rule>
     </rules>
     <facts>
-        <fact>
-            A
-        </fact>
-        <fact>
-            C
-        </fact>
+        <fact>A</fact>
+        <fact>B</fact>
+        <fact>D</fact>
     </facts>
-</format>
+</model>

@@ -12,13 +12,13 @@ public class Parser {
 
     private enum ParsingState {Rules, Facts, Finish}
 
-    private enum RuleState {BeforeFact, UnderlineFact, Fact, BeforeOperation, AndOperation, OrOperation, Arrow, BeforeResultFact, UnderlineResultFact, ResultFact, AfterResultFact, Bracket}
+    private enum RuleState {BeforeFact, UnderlineFact, Fact, BeforeOperation, AndOperation, OrOperation, Arrow, BeforeResultFact, UnderlineResultFact, ResultFact, AfterResultFact}
 
     private enum FactsState {BeforeFact, UnderlineFact, Fact, BeforeComma}
 
-    private enum FactState {BeforeFact, UnderlineFact, Fact}
+    private int row, position;
 
-    private int row;
+    char[] charArray;
 
     public Model parseFile(String filePath) throws InputException, IOException {
         BufferedReader br = new BufferedReader(new FileReader(filePath));
@@ -48,254 +48,109 @@ public class Parser {
         return new Model(facts, rules);
     }
 
-    private BracketExpression parseBracket(char[] c, int j) throws InputException {
+    private Expression parseExpression() throws InputException {
 
         List<Expression> andExpressionList = new ArrayList<>();
         List<Expression> orExpressionList = new ArrayList<>();
         StringBuilder fact = null;
         RuleState ruleState = RuleState.BeforeFact;
-        BracketExpression bracket = null;
-        FactExpression factExpression = null;
+        Expression factExpression = null;
 
-        for (int i = j + 1; i < c.length; i++) {
+        for (; position < charArray.length; position++) {
             switch (ruleState) {
                 case BeforeFact:
-                    if (c[i] == '(') {
-                        bracket = parseBracket(c, i);
-                        i = bracket.getPosition();
+                    if (charArray[position] == '(') {
+                        position++;
+                        factExpression = parseExpression();
                         ruleState = RuleState.BeforeOperation;
                         break;
                     }
-                    if (Character.isLetter(c[i])) {
+                    if (Character.isLetter(charArray[position])) {
                         fact = new StringBuilder();
-                        fact.append(c[i]);
+                        fact.append(charArray[position]);
                         ruleState = RuleState.Fact;
                         break;
                     }
-                    if (c[i] == '_') {
+                    if (charArray[position] == '_') {
                         fact = new StringBuilder();
-                        fact.append(c[i]);
+                        fact.append(charArray[position]);
                         ruleState = RuleState.UnderlineFact;
                         break;
                     }
-                    if (Character.isWhitespace(c[i]))
+                    if (Character.isWhitespace(charArray[position]))
                         break;
 
                     throw new InputException(row);
                 case UnderlineFact:
-                    if (Character.isLetter(c[i]) || c[i] == '_') {
-                        fact.append(c[i]);
+                    if (Character.isLetter(charArray[position]) || charArray[position] == '_') {
+                        fact.append(charArray[position]);
                         ruleState = RuleState.Fact;
                         break;
                     }
                     throw new InputException(row);
                 case Fact:
-                    if (c[i] == '_' || Character.isLetterOrDigit(c[i])) {
-                        fact.append(c[i]);
+                    if (charArray[position] == '_' || Character.isLetterOrDigit(charArray[position])) {
+                        fact.append(charArray[position]);
                         break;
                     }
-                    if (Character.isWhitespace(c[i])) {
+                    if (Character.isWhitespace(charArray[position])) {
                         factExpression = new FactExpression(fact.toString());
                         ruleState = RuleState.BeforeOperation;
                         break;
                     }
-                    if (c[i] == '&') {
+                    if (charArray[position] == '&') {
                         factExpression = new FactExpression(fact.toString());
                         ruleState = RuleState.AndOperation;
                         break;
                     }
-                    if (c[i] == '|') {
+                    if (charArray[position] == '|') {
                         factExpression = new FactExpression(fact.toString());
                         ruleState = RuleState.OrOperation;
                         break;
                     }
-                    if (c[i] == ')') {
+                    if (charArray[position] == '-') {
                         factExpression = new FactExpression(fact.toString());
-                        return getBracketExpression(andExpressionList, orExpressionList, bracket, factExpression, i);
+                        ruleState = RuleState.Arrow;
+                        break;
+                    }
+                    if (charArray[position] == ')') {
+                        factExpression = new FactExpression(fact.toString());
+                        return getExpression(andExpressionList, orExpressionList, factExpression);
                     }
                     throw new InputException(row);
                 case BeforeOperation:
-                    if (c[i] == '&') {
+                    if (charArray[position] == '&') {
                         ruleState = RuleState.AndOperation;
                         break;
                     }
-                    if (c[i] == '|') {
+                    if (charArray[position] == '|') {
                         ruleState = RuleState.OrOperation;
                         break;
                     }
-                    if (c[i] == ')') {
-                        return getBracketExpression(andExpressionList, orExpressionList, bracket, factExpression, i);
+                    if (charArray[position] == ')') {
+                        return getExpression(andExpressionList, orExpressionList, factExpression);
                     }
-                    if (Character.isWhitespace(c[i]))
+                    if (charArray[position] == '-') {
+                        ruleState = RuleState.Arrow;
+                        break;
+                    }
+                    if (Character.isWhitespace(charArray[position]))
                         break;
 
                     throw new InputException(row);
                 case AndOperation:
-                    if (c[i] == '&') {
-                        if (bracket != null)
-                            andExpressionList.add(bracket);
-                        else
-                            andExpressionList.add(factExpression);
+                    if (charArray[position] == '&') {
+                        andExpressionList.add(factExpression);
                         ruleState = RuleState.BeforeFact;
                         break;
                     }
                     throw new InputException(row);
                 case OrOperation:
-                    if (c[i] == '|') {
+                    if (charArray[position] == '|') {
                         if (andExpressionList.isEmpty())
-                            if (bracket != null)
-                                orExpressionList.add(bracket);
-                            else
-                                orExpressionList.add(factExpression);
+                            orExpressionList.add(factExpression);
                         else {
-                            if (bracket != null)
-                                andExpressionList.add(bracket);
-                            else
-                                andExpressionList.add(factExpression);
-                            orExpressionList.add(new AndExpression(andExpressionList));
-                            andExpressionList = new ArrayList<>();
-                        }
-                        ruleState = RuleState.BeforeFact;
-                        break;
-                    }
-                    throw new InputException(row);
-
-            }
-        }
-
-        return null;
-    }
-
-    private BracketExpression getBracketExpression(List<Expression> andExpressionList, List<Expression> orExpressionList, BracketExpression bracket, FactExpression factExpression, int i) {
-        Expression expression;
-        expression = factExpression;
-        if (!andExpressionList.isEmpty()) {
-            if (bracket != null)
-                andExpressionList.add(bracket);
-            else
-                andExpressionList.add(expression);
-            expression = new AndExpression(andExpressionList);
-        }
-        if (!orExpressionList.isEmpty()) {
-            orExpressionList.add(expression);
-            expression = new OrExpression(orExpressionList);
-        }
-        return new BracketExpression(expression, i);
-    }
-
-    public Rule parseRule(String line) throws InputException {
-        char[] c = line.toCharArray();
-        List<Expression> andExpressionList = new ArrayList<>();
-        List<Expression> orExpressionList = new ArrayList<>();
-        StringBuilder fact = null;
-        StringBuilder resultFact = null;
-        RuleState ruleState = RuleState.BeforeFact;
-        Expression expression = null;
-        BracketExpression bracket = null;
-        FactExpression factExpression = null;
-
-        for (int i = 0; i < line.length(); i++) {
-            switch (ruleState) {
-                case BeforeFact:
-                    if (c[i] == '(') {
-                        bracket = parseBracket(c, i);
-                        i = bracket.getPosition();
-                        ruleState = RuleState.BeforeOperation;
-                        break;
-                    }
-                    if (Character.isLetter(c[i])) {
-                        fact = new StringBuilder();
-                        fact.append(c[i]);
-                        ruleState = RuleState.Fact;
-                        break;
-                    }
-                    if (c[i] == '_') {
-                        fact = new StringBuilder();
-                        fact.append(c[i]);
-                        ruleState = RuleState.UnderlineFact;
-                        break;
-                    }
-                    if (Character.isWhitespace(c[i]))
-                        break;
-
-                    throw new InputException(row);
-
-                case UnderlineFact:
-                    if (Character.isLetter(c[i]) || c[i] == '_') {
-                        fact.append(c[i]);
-                        ruleState = RuleState.Fact;
-                        break;
-                    }
-                    throw new InputException(row);
-                case Fact:
-                    if (c[i] == '_' || Character.isLetterOrDigit(c[i])) {
-                        fact.append(c[i]);
-                        break;
-                    }
-                    if (Character.isWhitespace(c[i])) {
-                        factExpression = new FactExpression(fact.toString());
-                        ruleState = RuleState.BeforeOperation;
-                        break;
-                    }
-                    if (c[i] == '&') {
-                        factExpression = new FactExpression(fact.toString());
-                        ruleState = RuleState.AndOperation;
-                        break;
-                    }
-                    if (c[i] == '|') {
-                        factExpression = new FactExpression(fact.toString());
-                        ruleState = RuleState.OrOperation;
-                        break;
-                    }
-                    if (c[i] == '-') {
-                        factExpression = new FactExpression(fact.toString());
-                        ruleState = RuleState.Arrow;
-                        break;
-                    }
-                    throw new InputException(row);
-                case BeforeOperation:
-                    if (c[i] == '&') {
-                        ruleState = RuleState.AndOperation;
-                        break;
-                    }
-                    if (c[i] == '|') {
-                        ruleState = RuleState.OrOperation;
-                        break;
-                    }
-                    if (c[i] == '-') {
-                        ruleState = RuleState.Arrow;
-                        break;
-                    }
-                    if (Character.isWhitespace(c[i]))
-                        break;
-
-                    throw new InputException(row);
-                case AndOperation:
-                    if (c[i] == '&') {
-                        if (bracket == null)
                             andExpressionList.add(factExpression);
-                        else {
-                            andExpressionList.add(bracket);
-                            bracket = null;
-                        }
-                        ruleState = RuleState.BeforeFact;
-                        break;
-                    }
-                    throw new InputException(row);
-                case OrOperation:
-                    if (c[i] == '|') {
-                        if (andExpressionList.isEmpty())
-                            if (bracket == null)
-                                orExpressionList.add(factExpression);
-                            else {
-                                orExpressionList.add(bracket);
-                                bracket = null;
-                            }
-                        else {
-                            if (bracket == null)
-                                andExpressionList.add(factExpression);
-                            else
-                                andExpressionList.add(bracket);
                             orExpressionList.add(new AndExpression(andExpressionList));
                             andExpressionList = new ArrayList<>();
                         }
@@ -304,68 +159,97 @@ public class Parser {
                     }
                     throw new InputException(row);
                 case Arrow:
-                    if (c[i] == '>') {
-                        expression = factExpression;
-                        if (!andExpressionList.isEmpty()) {
-                            if (bracket == null)
-                                andExpressionList.add(expression);
-                            else {
-                                andExpressionList.add(bracket);
-                                bracket = null;
-                            }
-                            expression = new AndExpression(andExpressionList);
-                        }
-                        if (!orExpressionList.isEmpty()) {
-                            if (bracket == null)
-                                orExpressionList.add(expression);
-                            else
-                                orExpressionList.add(bracket);
-                            expression = new OrExpression(orExpressionList);
-                        }
-                        ruleState = RuleState.BeforeResultFact;
-                        break;
+                    if (charArray[position] == '>') {
+                        return getExpression(andExpressionList, orExpressionList, factExpression);
                     }
                     throw new InputException(row);
+            }
+        }
+        throw new InputException(row);
+    }
+
+    private Expression getExpression(List<Expression> andExpressionList, List<Expression> orExpressionList, Expression factExpression) {
+        Expression expression;
+        expression = factExpression;
+        if (!andExpressionList.isEmpty()) {
+            andExpressionList.add(expression);
+            expression = new AndExpression(andExpressionList);
+        }
+        if (!orExpressionList.isEmpty()) {
+            orExpressionList.add(expression);
+            expression = new OrExpression(orExpressionList);
+        }
+        return expression;
+    }
+
+    public Rule parseRule(String line) throws InputException {
+
+        charArray = line.toCharArray();
+
+        StringBuilder resultFact = null;
+        RuleState ruleState = RuleState.BeforeFact;
+        Expression expression = null;
+
+        position = 0;
+        for (; position < charArray.length; position++) {
+            switch (ruleState) {
+                case BeforeFact:
+                    expression = parseExpression();
+                    ruleState = RuleState.BeforeResultFact;
+                    break;
+                case BeforeResultFact:
+                    resultFact = parseResultFact();
+                    break;
+            }
+        }
+        return new Rule(expression, resultFact.toString());
+    }
+
+    private StringBuilder parseResultFact() throws InputException {
+        RuleState ruleState = RuleState.BeforeResultFact;
+        StringBuilder resultFact = null;
+        for (; position < charArray.length; position++) {
+            switch (ruleState) {
                 case BeforeResultFact:
                     resultFact = new StringBuilder();
-                    if (Character.isLetter(c[i])) {
-                        resultFact.append(c[i]);
+                    if (Character.isLetter(charArray[position])) {
+                        resultFact.append(charArray[position]);
                         ruleState = RuleState.ResultFact;
                         break;
                     }
-                    if (c[i] == '_') {
-                        resultFact.append(c[i]);
+                    if (charArray[position] == '_') {
+                        resultFact.append(charArray[position]);
                         ruleState = RuleState.UnderlineResultFact;
                         break;
                     }
-                    if (Character.isWhitespace(c[i]))
+                    if (Character.isWhitespace(charArray[position]))
                         break;
                     throw new InputException(row);
                 case UnderlineResultFact:
-                    if (Character.isLetter(c[i]) || c[i] == '_') {
-                        resultFact.append(c[i]);
+                    if (Character.isLetter(charArray[position]) || charArray[position] == '_') {
+                        resultFact.append(charArray[position]);
                         ruleState = RuleState.ResultFact;
                         break;
                     }
                     throw new InputException(row);
                 case ResultFact:
-                    if (c[i] == '_' || Character.isLetterOrDigit(c[i])) {
-                        resultFact.append(c[i]);
+                    if (charArray[position] == '_' || Character.isLetterOrDigit(charArray[position])) {
+                        resultFact.append(charArray[position]);
                         break;
                     }
-                    if (Character.isWhitespace(c[i])) {
+                    if (Character.isWhitespace(charArray[position])) {
                         ruleState = RuleState.AfterResultFact;
                         break;
                     }
                     throw new InputException(row);
                 case AfterResultFact:
-                    if (Character.isWhitespace(c[i]))
+                    if (Character.isWhitespace(charArray[position]))
                         break;
                     throw new InputException(row);
             }
         }
         if (ruleState == RuleState.ResultFact || ruleState == RuleState.AfterResultFact)
-            return new Rule(expression, resultFact.toString());
+            return resultFact;
         throw new InputException(row);
     }
 

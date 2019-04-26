@@ -1,10 +1,16 @@
 package exam;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 import java.util.List;
 import java.util.Set;
 
 public class OrExpression implements Expression {
-
+    @XmlElements({
+            @XmlElement(type = OrExpression.class, name = "or"),
+            @XmlElement(type = AndExpression.class, name = "and"),
+            @XmlElement(type = FactExpression.class, name = "expr")
+    })
     private List<Expression> expressionList;
 
     @Override
@@ -13,6 +19,9 @@ public class OrExpression implements Expression {
             if (expression.evaluate(allFacts)) return true;
         }
         return false;
+    }
+
+    public OrExpression() {
     }
 
     public OrExpression(List<Expression> expressionList) {

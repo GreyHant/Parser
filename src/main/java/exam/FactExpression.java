@@ -1,9 +1,11 @@
 package exam;
 
+import javax.xml.bind.annotation.XmlElement;
 import java.util.Set;
 
 public class FactExpression implements Expression {
 
+    @XmlElement(name = "fact")
     private String fact;
 
     @Override
@@ -13,6 +15,9 @@ public class FactExpression implements Expression {
 
     public FactExpression(String fact) {
         this.fact = fact;
+    }
+
+    public FactExpression() {
     }
 
     @Override
