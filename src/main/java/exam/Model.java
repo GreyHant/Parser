@@ -1,11 +1,12 @@
 package exam;
 
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 import java.util.Set;
 
 @XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 public class Model {
 
     @XmlElementWrapper(name = "rules")
@@ -45,5 +46,9 @@ public class Model {
                 "rules=" + rules +
                 ", facts=" + facts +
                 '}';
+    }
+
+    public List<Rule> getRules() {
+        return rules;
     }
 }

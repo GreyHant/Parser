@@ -10,11 +10,18 @@ public class Rule {
     @XmlElements({
             @XmlElement(type = OrExpression.class, name = "or"),
             @XmlElement(type = AndExpression.class, name = "and"),
-            @XmlElement(type = FactExpression.class, name = "expr")
+            @XmlElement(type = FactExpression.class, name = "fact")
     })
     private Expression expression;
     private String resultFact;
 
+    public Expression getExpression() {
+        return expression;
+    }
+
+    public String getResultFact() {
+        return resultFact;
+    }
 
     public void evaluate(Set<String> allFacts) {
         if (allFacts.contains(resultFact))
@@ -36,7 +43,7 @@ public class Rule {
         return "Rule{" +
                 expression.toString() +
                 ", resultFact='" + resultFact + '\'' +
-                '}';
+                '}'+System.lineSeparator();
     }
 
 }

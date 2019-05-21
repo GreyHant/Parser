@@ -6,4 +6,5 @@ public interface Expression {
 
     boolean evaluate(Set<String> allFacts);
 
+    Object getExpressions();
 }

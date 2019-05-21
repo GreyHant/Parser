@@ -9,7 +9,7 @@ public class OrExpression implements Expression {
     @XmlElements({
             @XmlElement(type = OrExpression.class, name = "or"),
             @XmlElement(type = AndExpression.class, name = "and"),
-            @XmlElement(type = FactExpression.class, name = "expr")
+            @XmlElement(type = FactExpression.class, name = "fact")
     })
     private List<Expression> expressionList;
 
@@ -19,6 +19,11 @@ public class OrExpression implements Expression {
             if (expression.evaluate(allFacts)) return true;
         }
         return false;
+    }
+
+    @Override
+    public Object getExpressions() {
+        return expressionList;
     }
 
     public OrExpression() {

@@ -34,8 +34,22 @@ class TestMain {
     }
 
     @Test
+    void mainSQL() {
+        testSQL("2", "a, b, c, d, e, f");
+    }
+    @Test
+    void mainSQL2() {
+        testSQL("34", "A, B, E, F, G, N");
+    }
+
+    @Test
     void mainXml() {
         testXml("xmltest", "A, B, D, N");
+    }
+
+    @Test
+    void mainXml1() {
+        testXml("xmltest1", "A, B, E, F, G, N");
     }
 
     @Test
@@ -124,7 +138,7 @@ class TestMain {
         String[] args = {};
 
         Main.main(args);
-        String template = "ќтсутствует им€ файла. ¬ведите им€ файла в качестве параметра при вызове утилиты." + System.lineSeparator();
+        String template = "ќтсутствует тип данных. ¬ведите тип данных в качестве параметра при вызове утилиты." + System.lineSeparator();
         assertEquals(template, output.toString());
     }
 
@@ -138,6 +152,14 @@ class TestMain {
 
     void testXml(String filename, String template) {
         String[] args = {"xml", testDir.getAbsolutePath() + File.separator + filename + ".xml"};
+
+        Main.main(args);
+
+        assertEquals(template, output.toString());
+    }
+
+    void testSQL(String idModel, String template) {
+        String[] args = {"sql", idModel};
 
         Main.main(args);
 

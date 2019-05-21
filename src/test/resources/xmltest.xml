@@ -4,41 +4,36 @@
         <rule>
             <and>
                 <or>
-                    <expr>
-                        <fact>A</fact>
-                    </expr>
-                    <expr>
-                        <fact>B</fact>
-                    </expr>
+
+                    <fact fact="A"/>
+
+
+                    <fact fact="B"/>
+
                 </or>
-                <expr>
-                    <fact>C</fact>
-                </expr>
+
+                <fact fact="C"/>
+
             </and>
             <resultFact>H</resultFact>
         </rule>
         <rule>
             <and>
                 <and>
-                    <expr>
-                        <fact>A</fact>
-                    </expr>
+
+                    <fact fact="A"/>
                     <or>
-                        <expr>
-                            <fact>B</fact>
-                        </expr>
-                        <expr>
-                            <fact>C</fact>
-                        </expr>
+
+                        <fact fact="B"/>
+
+                        <fact fact="C"/>
                     </or>
                 </and>
                 <or>
-                    <expr>
-                        <fact>D</fact>
-                    </expr>
-                    <expr>
-                        <fact>E</fact>
-                    </expr>
+
+                    <fact fact="D"/>
+
+                    <fact fact="E"/>
                 </or>
             </and>
             <resultFact>N</resultFact>

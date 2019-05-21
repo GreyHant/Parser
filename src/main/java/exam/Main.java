@@ -1,29 +1,41 @@
 package exam;
 
-import javax.xml.bind.JAXBContext;
+import org.xml.sax.SAXException;
+
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.Unmarshaller;
-import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
 public class Main {
     public static void main(String[] args) {
-
         if (args.length == 0) {
+            System.out.println("Отсутствует тип данных. Введите тип данных в качестве параметра при вызове утилиты.");
+            return;
+        }
+        if (args.length == 1) {
             System.out.println("Отсутствует имя файла. Введите имя файла в качестве параметра при вызове утилиты.");
             return;
         }
-        if (args[0].equals("xml")) {
+        if (args[0].equals("sql")) {
+            ParserSQL parserSQL = new ParserSQL();
             try {
-                JAXBContext context = JAXBContext.newInstance(Model.class);
-                Unmarshaller unmarshaller = context.createUnmarshaller();
-                Model model = (Model) unmarshaller.unmarshal(new File(args[1]));
+                Model model = parserSQL.parseFromDB(Integer.parseInt(args[1]));
                 model.calculate();
                 printFullFacts(model);
-            } catch (JAXBException e) {
+            } catch (IOException e) {
+                System.out.println("Ошибка при работе с базой данных.");
+//                e.printStackTrace();
+            }
+        }
+        if (args[0].equals("xml")) {
+            try {
+                ParserXml parserXml = new ParserXml();
+                Model model = parserXml.parseXml(args[1]);
+                model.calculate();
+                printFullFacts(model);
+            } catch (JAXBException | SAXException e) {
                 System.out.println("Ошибка при работе с файлом.");
+//                e.printStackTrace();
                 return;
             }
 
@@ -41,10 +53,13 @@ public class Main {
                 return;
             }
 //            try {
-//                convertTxtToXml(model);
-//            } catch (JAXBException e) {
+//                Converter converter = new Converter();
+//                converter.convertModelToXml(model);
+//                converter.convertModelToSql(model);
+//            } catch (JAXBException | FileNotFoundException e) {
 //                e.printStackTrace();
 //            }
+
             model.calculate();
             printFullFacts(model);
         }
@@ -61,12 +76,6 @@ public class Main {
         }
     }
 
-    private static void convertTxtToXml(Model model) throws JAXBException {
-        JAXBContext context = JAXBContext.newInstance(Model.class);
-        Marshaller m = context.createMarshaller();
-        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 
-        m.marshal(model, new File("Model.xml"));
-    }
 }
 

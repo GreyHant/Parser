@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="exam.ModelMapper">
+    <resultMap id="rule" type="exam.DBRule">
+        <result column="idrule" property="idRule"/>
+        <result column="expr" property="expr"/>
+        <result column="result" property="result"/>
+        <result column="idmodel" property="idModel"/>
+    </resultMap>
+    <resultMap id="expression" type="exam.DBExpression">
+        <result column="idexpr" property="idExpr"/>
+        <result column="op" property="op"/>
+        <result column="value" property="value"/>
+        <result column="parent" property="parent"/>
+    </resultMap>
+    <select id="getModels" resultType="java.lang.Integer">
+        SELECT *
+        FROM rules.models
+    </select>
+    <select id="getFacts" resultType="java.lang.String">
+        SELECT fact
+        FROM rules.facts
+        WHERE idmodel = #{model}
+    </select>
+    <select id="getRules" resultMap="rule">
+        SELECT *
+        FROM rules.rules
+        WHERE idmodel = #{model}
+    </select>
+    <select id="getExpression" resultMap="expression">
+        SELECT *
+        FROM rules.expressions
+        WHERE idexpr = #{expr}
+    </select>
+    <select id="getChildExpressions" resultMap="expression">
+        SELECT *
+        FROM rules.expressions
+        WHERE parent = #{expr}
+    </select>
+    <insert id="insertNewModel" >
+        insert into models (description)
+        values (#{description})
+    </insert>
+    <select id="getLastInsert" resultType="java.lang.Integer">
+        SELECT LAST_INSERT_ID()
+    </select>
+    <insert id="insertFact" useGeneratedKeys="true"
+    >
+        insert into facts (fact, idmodel)
+        VALUES (#{fact}, #{idModel})
+    </insert>
+    <insert id="insertRule" useGeneratedKeys="true"
+    >
+        insert into rules (result, idexpr, idmodel)
+        VALUES (#{result}, #{idExpr}, #{idModel})
+    </insert>
+    <insert id="insertExpression" useGeneratedKeys="true"
+    >
+        insert into expressions (op, value, parent)
+        values (#{op}, #{value}, #{parent})
+    </insert>
+</mapper>

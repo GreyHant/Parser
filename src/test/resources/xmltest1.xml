@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model>
+    <rules>
+        <rule>
+            <or>
+                <fact fact="D"/>
+                <and>
+                    <fact fact="A"/>
+                    <or>
+                        <fact fact="B"/>
+                        <fact fact="C"/>
+                    </or>
+                </and>
+            </or>
+            <resultFact>E</resultFact>
+        </rule>
+        <rule>
+            <or>
+                <and>
+                    <fact fact="A"/>
+                    <or>
+                        <fact fact="B"/>
+                        <fact fact="C"/>
+                    </or>
+                </and>
+                <fact fact="D"/>
+            </or>
+            <resultFact>F</resultFact>
+        </rule>
+        <rule>
+            <and>
+                <fact fact="A"/>
+                <or>
+                    <fact fact="B"/>
+                    <fact fact="C"/>
+                </or>
+            </and>
+            <resultFact>G</resultFact>
+        </rule>
+        <rule>
+            <and>
+                <or>
+                    <fact fact="A"/>
+                    <fact fact="B"/>
+                </or>
+                <fact fact="C"/>
+            </and>
+            <resultFact>H</resultFact>
+        </rule>
+        <rule>
+            <and>
+                <and>
+                    <fact fact="A"/>
+                    <or>
+                        <fact fact="B"/>
+                        <fact fact="C"/>
+                    </or>
+                </and>
+                <or>
+                    <fact fact="D"/>
+                    <fact fact="E"/>
+                </or>
+            </and>
+            <resultFact>N</resultFact>
+        </rule>
+    </rules>
+    <facts>
+        <fact>A</fact>
+        <fact>B</fact>
+    </facts>
+</model>

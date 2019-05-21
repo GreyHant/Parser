@@ -1,16 +1,22 @@
 package exam;
 
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlAttribute;
 import java.util.Set;
 
 public class FactExpression implements Expression {
 
-    @XmlElement(name = "fact")
+    @XmlAttribute(name = "fact")
+//    @Pattern(regexp="_*\\p{IsAlphabetic}+[\\p{IsAlphabetic}_\\d]*")
     private String fact;
 
     @Override
     public boolean evaluate(Set<String> allFacts) {
         return allFacts.contains(fact);
+    }
+
+    @Override
+    public Object getExpressions() {
+        return fact;
     }
 
     public FactExpression(String fact) {
