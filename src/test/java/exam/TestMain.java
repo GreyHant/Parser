@@ -5,7 +5,9 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.PrintStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -35,12 +37,13 @@ class TestMain {
 
     @Test
     void mainSQL() {
-        testSQL("2", "a, b, c, d, e, f");
+        testSQL("name", "A, B, E, F, G, N");
     }
-    @Test
-    void mainSQL2() {
-        testSQL("34", "A, B, E, F, G, N");
-    }
+
+//    @Test
+//    void mainSQL2() {
+//        testSQL("34", "A, B, E, F, G, N");
+//    }
 
     @Test
     void mainXml() {
@@ -74,76 +77,84 @@ class TestMain {
 
     @Test
     void mainBad() {
-        testTxt("badtest", "Ошибка формата данных в строке [14]." + System.lineSeparator());
+        testTxt("badtest", "Произошла ошибка" + System.lineSeparator());
     }
 
     @Test
     void mainBad1() {
-        testTxt("badtest1", "Ошибка формата данных в строке [12]." + System.lineSeparator());
+        testTxt("badtest1", "Произошла ошибка" + System.lineSeparator());
     }
 
     @Test
     void mainBad2() {
-        testTxt("badtest2", "Ошибка формата данных в строке [12]." + System.lineSeparator());
+        testTxt("badtest2", "Произошла ошибка" + System.lineSeparator());
     }
 
     @Test
     void mainBad3() {
-        testTxt("badtest3", "Ошибка формата данных в строке [1]." + System.lineSeparator());
+        testTxt("badtest3", "Произошла ошибка" + System.lineSeparator());
     }
 
     @Test
     void mainBad4() {
-        testTxt("badtest4", "Ошибка формата данных в строке [2]." + System.lineSeparator());
+        testTxt("badtest4", "Произошла ошибка" + System.lineSeparator());
     }
 
     @Test
     void mainBad5() {
-        testTxt("badtest5", "Ошибка формата данных в строке [3]." + System.lineSeparator());
+        testTxt("badtest5", "Произошла ошибка" + System.lineSeparator());
     }
 
     @Test
     void mainBad6() {
-        testTxt("badtest6", "Ошибка формата данных в строке [6]." + System.lineSeparator());
+        testTxt("badtest6", "Произошла ошибка" + System.lineSeparator());
     }
 
     @Test
     void mainBad7() {
-        testTxt("badtest7", "Ошибка формата данных в строке [11]." + System.lineSeparator());
+        testTxt("badtest7", "Произошла ошибка" + System.lineSeparator());
     }
 
     @Test
     void mainBad8() {
-        testTxt("badtest8", "Ошибка формата данных в строке [13]." + System.lineSeparator());
+        testTxt("badtest8", "Произошла ошибка" + System.lineSeparator());
     }
 
     @Test
     void mainBad9() {
-        testTxt("badtest9", "Ошибка формата данных в строке [2]." + System.lineSeparator());
+        testTxt("badtest9", "Произошла ошибка" + System.lineSeparator());
     }
 
     @Test
     void mainBad10() {
-        testTxt("badtest10", "Ошибка формата данных в строке [2]." + System.lineSeparator());
+        testTxt("badtest10", "Произошла ошибка" + System.lineSeparator());
     }
 
     @Test
     void mainBad11() {
-        testTxt("badtest11", "Ошибка формата данных в строке [1]." + System.lineSeparator());
+        testTxt("badtest11", "Произошла ошибка" + System.lineSeparator());
     }
 
     @Test
     void mainNoArgs() {
-//        createFile(goodFile);
         String[] args = {};
 
         Main.main(args);
-        String template = "Отсутствует тип данных. Введите тип данных в качестве параметра при вызове утилиты." + System.lineSeparator();
+        String template = "Неверные входные параметры" + System.lineSeparator();
         assertEquals(template, output.toString());
     }
 
+//    @Test
+//    void mainArgs() {
+//        String[] args = {"-txt", "-f", "rules.txt", "-c", "xml", "name", "XmlModel.xsd"};
+//
+//        Main.main(args);
+//        String template = "Неверные входные параметры" + System.lineSeparator();
+//        assertEquals(template, output.toString());
+//    }
+
     void testTxt(String filename, String template) {
-        String[] args = {"txt", testDir.getAbsolutePath() + File.separator + filename + ".txt"};
+        String[] args = {"-itype=txt", "-ifile=" + testDir.getAbsolutePath() + File.separator + filename + ".txt", "-d"};
 
         Main.main(args);
 
@@ -151,32 +162,20 @@ class TestMain {
     }
 
     void testXml(String filename, String template) {
-        String[] args = {"xml", testDir.getAbsolutePath() + File.separator + filename + ".xml"};
+        String[] args = {"-itype=xml", "-ifile=" + testDir.getAbsolutePath() + File.separator + filename + ".xml", "-d"};
 
         Main.main(args);
 
         assertEquals(template, output.toString());
     }
 
-    void testSQL(String idModel, String template) {
-        String[] args = {"sql", idModel};
+    void testSQL(String model, String template) {
+        String[] args = {"-itype=sql", "-imodel=name", "-ifile=" + "resources/SQLConfiguration.xml", "-d"};
 
         Main.main(args);
 
         assertEquals(template, output.toString());
     }
 
-    static File createFile(String s) {
-        File file = new File("src\\testTxt.resources\\testTxt.txt");
 
-        try {
-            FileWriter fileWriter = new FileWriter(file.getAbsoluteFile());
-            BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(s);
-            bufferedWriter.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return file;
-    }
 }

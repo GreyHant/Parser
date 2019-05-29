@@ -1,6 +1,6 @@
 package exam;
 
-public class InputException extends Throwable {
+public class InputException extends Exception {
 
     private String problem;
 
@@ -10,6 +10,10 @@ public class InputException extends Throwable {
 
     public InputException(int row, String op) {
         this.problem = "Ошибка формата данных в строке [" + row + "]. Отсутствует оператор " + op + ".";
+    }
+
+    public InputException(String problem) {
+        this.problem = problem;
     }
 
     public InputException(int row) {

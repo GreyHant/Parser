@@ -21,8 +21,7 @@ public class OrExpression implements Expression {
         return false;
     }
 
-    @Override
-    public Object getExpressions() {
+    public List<Expression> getExpressionList() {
         return expressionList;
     }
 
@@ -36,5 +35,10 @@ public class OrExpression implements Expression {
     @Override
     public String toString() {
         return "OrExpression=" + expressionList;
+    }
+
+    @Override
+    public void Serialize(Serializer s){
+        s.SerializeOrExpression(expressionList);
     }
 }

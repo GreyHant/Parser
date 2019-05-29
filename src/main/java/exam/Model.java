@@ -25,7 +25,14 @@ public class Model {
     public Model() {
     }
 
-    public void calculate() {
+
+    void Serialize(Serializer s)
+    {
+        s.SerializeRules(rules);
+        s.SerializeKnownFacts(facts);
+    }
+
+    public Set<String> deduce() {
         int factsSize;
         do {
             factsSize = facts.size();
@@ -33,22 +40,7 @@ public class Model {
                 rule.evaluate(facts);
             }
         } while (factsSize != facts.size());
-    }
-
-
-    public Set<String> getFacts() {
         return facts;
     }
 
-    @Override
-    public String toString() {
-        return "Model{" +
-                "rules=" + rules +
-                ", facts=" + facts +
-                '}';
-    }
-
-    public List<Rule> getRules() {
-        return rules;
-    }
 }

@@ -4,15 +4,17 @@
                 "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <typeAliases>
-        <typeAlias alias="model" type="exam.Model"/>
+        <typeAlias alias="model" type="exam.DBModel"/>
+        <typeAlias alias="expression" type="exam.DBExpression"/>
+        <typeAlias alias="rule" type="exam.DBRule"/>
     </typeAliases>
     <environments default="development">
         <environment id="development">
             <transactionManager type="JDBC"/>
             <dataSource type="POOLED">
-                <property name="driver" value="com.mysql.jdbc.Driver"/>
-                <property name="url" value="jdbc:mysql://localhost:3306/rules"/>
-                <property name="username" value="root"/>
+                <property name="driver" value="org.postgresql.Driver"/>
+                <property name="url" value="jdbc:postgresql://localhost:5432/postgres"/>
+                <property name="username" value="postgres"/>
                 <property name="password" value="root"/>
             </dataSource>
         </environment>

@@ -6,23 +6,27 @@ import javax.validation.constraints.Null;
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.Marshaller;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import java.io.File;
 import java.util.Objects;
 
-public class ParserXml implements Parser {
+public class WriterXml implements Writer{
 
     @Override
-    public Model parse(String filename, @Null String modelName) throws JAXBException, SAXException {
+    public void write(String fileName, Model model, @Null String modelName) throws JAXBException, SAXException {
         JAXBContext context = JAXBContext.newInstance(Model.class);
-        Unmarshaller unmarshaller = context.createUnmarshaller();
+        Marshaller m = context.createMarshaller();
+        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
         SchemaFactory sf = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         ClassLoader classLoader = getClass().getClassLoader();
         Schema modelSchema = sf.newSchema(Objects.requireNonNull(classLoader.getResource("XmlModel.xsd")));
-        unmarshaller.setSchema(modelSchema);
-        return (Model) unmarshaller.unmarshal(new File(filename));
-    }
+        m.setSchema(modelSchema);
 
+        if (fileName.substring(fileName.length()-4).equals(".xml")){
+            m.marshal(model, new File(fileName));
+        } else m.marshal(model, new File(fileName + ".xml"));
+
+    }
 }

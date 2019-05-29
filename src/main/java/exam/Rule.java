@@ -46,4 +46,8 @@ public class Rule {
                 '}'+System.lineSeparator();
     }
 
+    void Serialize(Serializer s){
+        s.SerializeRule(expression, resultFact);
+    }
+
 }

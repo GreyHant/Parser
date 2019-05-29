@@ -18,15 +18,16 @@ class TestDB {
         SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(reader);
 
         try (SqlSession session = factory.openSession()) {
-            ModelMapper mapper = session.getMapper(ModelMapper.class);
-            mapper.insertNewModel("description");
-            int idModel = mapper.getLastInsert();
-            System.out.println(idModel);
+
         }
     }
     @Test
     void parserSql() throws IOException {
         ParserSQL parserSQL = new ParserSQL();
-        System.out.println(parserSQL.parseFromDB(34));
+    }
+    @Test
+    void deleterSql() throws IOException {
+        DeleterSQL deleterSQL = new DeleterSQL();
+        deleterSQL.delete("resources/SQLConfiguration.xml", "test");
     }
 }

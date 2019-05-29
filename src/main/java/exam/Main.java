@@ -1,81 +1,94 @@
 package exam;
 
-import org.xml.sax.SAXException;
+import org.apache.commons.cli.*;
+import org.apache.ibatis.exceptions.PersistenceException;
 
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
 
 public class Main {
-    public static void main(String[] args) {
-        if (args.length == 0) {
-            System.out.println("Отсутствует тип данных. Введите тип данных в качестве параметра при вызове утилиты.");
-            return;
-        }
-        if (args.length == 1) {
-            System.out.println("Отсутствует имя файла. Введите имя файла в качестве параметра при вызове утилиты.");
-            return;
-        }
-        if (args[0].equals("sql")) {
-            ParserSQL parserSQL = new ParserSQL();
-            try {
-                Model model = parserSQL.parseFromDB(Integer.parseInt(args[1]));
-                model.calculate();
-                printFullFacts(model);
-            } catch (IOException e) {
-                System.out.println("Ошибка при работе с базой данных.");
-//                e.printStackTrace();
-            }
-        }
-        if (args[0].equals("xml")) {
-            try {
-                ParserXml parserXml = new ParserXml();
-                Model model = parserXml.parseXml(args[1]);
-                model.calculate();
-                printFullFacts(model);
-            } catch (JAXBException | SAXException e) {
-                System.out.println("Ошибка при работе с файлом.");
-//                e.printStackTrace();
-                return;
-            }
 
-        }
-        if (args[0].equals("txt")) {
-            Parser parser = new Parser();
-            Model model;
-            try {
-                model = parser.parseFile(args[1]);
-            } catch (InputException e) {
-                System.out.println(e.getProblem());
-                return;
-            } catch (IOException ex) {
-                System.out.println("Не удалось найти файл с указанным именем.");
-                return;
-            }
-//            try {
-//                Converter converter = new Converter();
-//                converter.convertModelToXml(model);
-//                converter.convertModelToSql(model);
-//            } catch (JAXBException | FileNotFoundException e) {
-//                e.printStackTrace();
-//            }
+    private static Options makeOptions() {
+        Options options = new Options();
 
-            model.calculate();
-            printFullFacts(model);
-        }
+        OptionGroup type = new OptionGroup();
+        Option i = new Option("i", true, "input");
+        i.setArgs(3);
+        i.setArgName("property=value");
+        i.setOptionalArg(false);
+        type.addOption(i);
+        type.setRequired(true);
+        options.addOptionGroup(type);
+
+        Option o = new Option("o", true, "output");
+        o.setArgName("property=value");
+        o.setArgs(3);
+        options.addOption(o);
+
+        OptionGroup action = new OptionGroup();
+        action.addOption(new Option("d", false, "deduce"));
+        Option c = new Option("c", false, "convert");
+        action.addOption(c);
+        action.setRequired(true);
+        options.addOptionGroup(action);
+        return options;
     }
 
-    private static void printFullFacts(Model model) {
-        Iterator<String> fi = model.getFacts().iterator();
+    public static void main(String[] args) throws PersistenceException {
+
+        try {
+            CommandLineParser cmdParser = new DefaultParser();
+            CommandLine cmd = cmdParser.parse(makeOptions(), args);
+            Properties input = cmd.getOptionProperties("i");
+            Engine.Type inputType = null;
+            if (input.getProperty("type").equals("txt")) {
+                inputType = Engine.Type.Txt;
+            }
+            if (input.getProperty("type").equals("xml")) {
+                inputType = Engine.Type.Xml;
+            }
+            if (input.getProperty("type").equals("sql")) {
+                inputType = Engine.Type.Sql;
+            }
+            Engine engine = new Engine();
+            if (cmd.hasOption("d")) {
+                Set<String> fullFacts = engine.deduce(inputType, input.getProperty("file"), input.getProperty("model"));
+                System.out.print(makeFullFactsString(fullFacts));
+                return;
+            }
+            if (cmd.hasOption("c")) {
+                Properties output = cmd.getOptionProperties("o");
+                Engine.Type outputType = null;
+                if (output.getProperty("type").equals("xml")) {
+                    outputType = Engine.Type.Xml;
+                }
+                if (output.getProperty("type").equals("sql")) {
+                    outputType = Engine.Type.Sql;
+                }
+                engine.convert(inputType, outputType, input.getProperty("file"), input.getProperty("model"), output.getProperty("file"), output.getProperty("model"));
+
+            }
+
+        } catch (ParseException e) {
+            System.out.println("Неверные входные параметры");
+        } catch (NullPointerException e) {
+            System.out.println("Произошла ошибка");
+        }
+
+    }
+
+    private static String makeFullFactsString(Set<String> facts) {
+        Iterator<String> fi = facts.iterator();
+        String fullFacts = "";
         if (fi.hasNext())
-            System.out.print(fi.next());
+            fullFacts = fullFacts.concat(fi.next());
 
         while (fi.hasNext()) {
-            System.out.print(", ");
-            System.out.print(fi.next());
+            fullFacts = fullFacts.concat(", ");
+            fullFacts = fullFacts.concat(fi.next());
         }
+        return fullFacts;
     }
-
-
 }
 

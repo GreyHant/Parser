@@ -1,31 +1,26 @@
 package exam;
 
 import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 
-import java.io.FileReader;
 import java.io.IOException;
-import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class ParserSQL {
+public class ParserSQL implements Parser {
 
-    public Model parseFromDB(int idModel) throws IOException {
+    @Override
+    public Model parse(String fileName, String modelName) throws IOException {
 
-        Reader reader = new FileReader("SQLConfiguration.xml");
-        SqlSessionFactory factory = new SqlSessionFactoryBuilder().build(reader);
-
-        try (SqlSession session = factory.openSession()) {
+        try (SqlSession session = SQLConnector.openSession(fileName)) {
             ModelMapper mapper = session.getMapper(ModelMapper.class);
+            int idModel = mapper.getModel(modelName);
             Set<String> factsSet = mapper.getFacts(idModel);
             List<DBRule> dbRules = mapper.getRules(idModel);
             List<Rule> ruleList = new ArrayList<>();
             for (DBRule dbRule : dbRules) {
                 Expression expression = makeExpression(mapper, mapper.getExpression(dbRule.getIdExpr()));
-                Rule rule = new Rule(expression, dbRule.getResult());
+                Rule rule = new Rule(expression, dbRule.getResultFact());
                 ruleList.add(rule);
             }
             return new Model(factsSet, ruleList);
@@ -50,7 +45,7 @@ public class ParserSQL {
                 expression = new AndExpression(expressionList);
                 break;
             case "fact":
-                expression = new FactExpression(dbExpression.getValue());
+                expression = new FactExpression(dbExpression.getFact());
                 break;
         }
         return expression;

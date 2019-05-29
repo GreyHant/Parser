@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="exam.ModelMapper">
+    <resultMap id="rule" type="exam.DBRule">
+        <id column="idrule" property="idRule"/>
+        <result column="expr" property="expr"/>
+        <result column="resultfact" property="resultFact"/>
+        <result column="idmodel" property="idModel"/>
+    </resultMap>
+    <resultMap id="expression" type="exam.DBExpression">
+        <id column="idexpr" property="idExpr"/>
+        <result column="op" property="op"/>
+        <result column="fact" property="fact"/>
+        <result column="parent" property="parent"/>
+    </resultMap>
+    <resultMap id="model" type="exam.DBModel">
+        <id column="idmodel" property="idModel"/>
+        <result column="name" property="name"/>
+    </resultMap>
+    <select id="getModel" resultType="java.lang.Integer">
+        SELECT idmodel
+        FROM rules.models
+        where name = #{name}
+    </select>
+    <select id="getFacts" resultType="java.lang.String">
+        SELECT fact
+        FROM rules.knownfacts
+        WHERE idmodel = #{model}
+    </select>
+    <select id="getRules" resultMap="rule">
+        SELECT *
+        FROM rules.rules
+        WHERE idmodel = #{model}
+    </select>
+    <select id="getExpression" resultMap="expression">
+        SELECT *
+        FROM rules.expressions
+        WHERE idexpr = #{expr}
+    </select>
+    <select id="getChildExpressions" resultMap="expression">
+        SELECT *
+        FROM rules.expressions
+        WHERE parent = #{expr}
+    </select>
+    <insert id="insertNewModel" parameterType="model" useGeneratedKeys="true" keyProperty="idModel" keyColumn="idmodel">
+        insert into rules.models (name)
+        values (#{name})
+    </insert>
+
+    <insert id="insertFact" useGeneratedKeys="true">
+        insert into rules.knownfacts (fact, idmodel)
+        VALUES (#{fact}, #{idModel})
+    </insert>
+    <insert id="insertRule" useGeneratedKeys="true">
+        insert into rules.rules (resultfact, idexpr, idmodel)
+        VALUES (#{resultfact}, #{idExpr}, #{idModel})
+    </insert>
+    <insert id="insertExpression" useGeneratedKeys="true" keyProperty="idExpr" parameterType="expression">
+        insert into rules.expressions (op, fact, parent)
+        values (#{op}::rules.operation, #{fact}, #{parent})
+    </insert>
+    <delete id="deleteModel">
+        delete
+        from models
+        where idmodel = #{idmodel}
+    </delete>
+    <delete id="deleteFacts">
+        delete
+        from knownfacts
+        where idmodel = #{model}
+    </delete>
+    <delete id="deleteRules">
+        delete
+        from rules
+        where idmodel = #{model}
+    </delete>
+    <delete id="deleteExpression">
+        delete
+        from expressions
+        where idexpr in
+        <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
+            #{item}
+        </foreach>
+    </delete>
+    <delete id="deleteChildExpression">
+        delete
+        from expressions
+        where parent = #{parent}
+    </delete>
+</mapper>

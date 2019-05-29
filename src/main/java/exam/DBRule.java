@@ -6,11 +6,11 @@ public class DBRule implements Serializable {
 
     private int idRule;
     private int idExpr;
-    private String result;
+    private String resultFact;
     private int idModel;
 
-    public String getResult() {
-        return result;
+    public String getResultFact() {
+        return resultFact;
     }
 
     public Integer getIdExpr() {
@@ -22,7 +22,7 @@ public class DBRule implements Serializable {
         return "DBRule{" +
                 "idRule=" + idRule +
                 ", idExpr=" + idExpr +
-                ", result='" + result + '\'' +
+                ", resultFact='" + resultFact + '\'' +
                 ", model=" + idModel +
                 '}';
     }

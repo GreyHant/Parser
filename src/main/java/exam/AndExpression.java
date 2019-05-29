@@ -23,7 +23,11 @@ public class AndExpression implements Expression {
     }
 
     @Override
-    public Object getExpressions() {
+    public void Serialize(Serializer s) {
+        s.SerializeAndExpression(expressionList);
+    }
+
+    public List<Expression> getExpressionList() {
         return expressionList;
     }
 

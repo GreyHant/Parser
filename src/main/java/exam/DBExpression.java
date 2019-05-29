@@ -1,17 +1,16 @@
 package exam;
 
 import java.io.Serializable;
-import java.util.Set;
 
-public class DBExpression implements Expression, Serializable {
+public class DBExpression implements Serializable {
 
     private int idExpr;
     private String op;
-    private String value;
+    private String fact;
     private int parent;
 
-    public String getValue() {
-        return value;
+    public String getFact() {
+        return fact;
     }
 
     public Integer getIdExpr() {
@@ -22,13 +21,16 @@ public class DBExpression implements Expression, Serializable {
         return op;
     }
 
-    @Override
-    public boolean evaluate(Set<String> allFacts) {
-        return false;
+    public DBExpression(String op, String fact, int parent) {
+        this.op = op;
+        this.fact = fact;
+        this.parent = parent;
     }
 
-    @Override
-    public Object getExpressions() {
-        return null;
+    public DBExpression(int idExpr, String op, String fact, int parent) {
+        this.idExpr = idExpr;
+        this.op = op;
+        this.fact = fact;
+        this.parent = parent;
     }
 }

@@ -6,7 +6,6 @@ import java.util.Set;
 public class FactExpression implements Expression {
 
     @XmlAttribute(name = "fact")
-//    @Pattern(regexp="_*\\p{IsAlphabetic}+[\\p{IsAlphabetic}_\\d]*")
     private String fact;
 
     @Override
@@ -15,7 +14,11 @@ public class FactExpression implements Expression {
     }
 
     @Override
-    public Object getExpressions() {
+    public void Serialize(Serializer s) {
+        s.SerializeFactExpression(fact);
+    }
+
+    public String getFact() {
         return fact;
     }
 

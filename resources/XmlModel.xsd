@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema version="1.1" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="model" type="model"/>
+
+
+    <xs:complexType name="model">
+        <xs:all>
+            <xs:element name="rules">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="rule" type="rule" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+            <xs:element name="facts">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="fact" type="fact" maxOccurs="unbounded"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
+        </xs:all>
+    </xs:complexType>
+
+
+    <xs:complexType name="rule">
+        <xs:sequence>
+            <xs:choice>
+                <xs:element name="or" type="expression"/>
+                <xs:element name="and" type="expression"/>
+                <xs:element name="fact" type="factExpression"/>
+            </xs:choice>
+            <xs:element name="resultFact" type="fact"/>
+        </xs:sequence>
+    </xs:complexType>
+
+
+    <xs:complexType name="factExpression">
+        <xs:attribute name="fact" type="fact"/>
+    </xs:complexType>
+
+    <xs:simpleType name="fact">
+        <xs:restriction base="xs:string">
+            <xs:pattern
+                    value="_*\p{L}+[_\d\p{L}]*"/>
+        </xs:restriction>
+    </xs:simpleType>
+
+
+
+    <xs:complexType name="expression">
+        <xs:choice minOccurs="2" maxOccurs="unbounded">
+            <xs:element name="or" type="expression"/>
+            <xs:element name="and" type="expression"/>
+            <xs:element name="fact" type="factExpression"/>
+        </xs:choice>
+    </xs:complexType>
+</xs:schema>
+
