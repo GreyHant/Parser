@@ -40,6 +40,15 @@ class TestMain {
         testSQL("name", "A, B, E, F, G, N");
     }
 
+    @Test
+    void mainSQL1() {
+        testSQL("test", "A, B, E, F, G, N");
+    }
+
+    @Test
+    void mainSQL123() {
+        testSQL("test123", "A, B, E, F, G, N");
+    }
 //    @Test
 //    void mainSQL2() {
 //        testSQL("34", "A, B, E, F, G, N");
@@ -77,84 +86,67 @@ class TestMain {
 
     @Test
     void mainBad() {
-        testTxt("badtest", "Произошла ошибка" + System.lineSeparator());
+        testTxt("badtest", "");
     }
 
     @Test
     void mainBad1() {
-        testTxt("badtest1", "Произошла ошибка" + System.lineSeparator());
+        testTxt("badtest1", "");
     }
 
     @Test
     void mainBad2() {
-        testTxt("badtest2", "Произошла ошибка" + System.lineSeparator());
+        testTxt("badtest2", "");
     }
 
     @Test
     void mainBad3() {
-        testTxt("badtest3", "Произошла ошибка" + System.lineSeparator());
+        testTxt("badtest3", "");
     }
 
     @Test
     void mainBad4() {
-        testTxt("badtest4", "Произошла ошибка" + System.lineSeparator());
+        testTxt("badtest4", "");
     }
 
     @Test
     void mainBad5() {
-        testTxt("badtest5", "Произошла ошибка" + System.lineSeparator());
+        testTxt("badtest5", "");
     }
 
     @Test
     void mainBad6() {
-        testTxt("badtest6", "Произошла ошибка" + System.lineSeparator());
+        testTxt("badtest6", "");
     }
 
     @Test
     void mainBad7() {
-        testTxt("badtest7", "Произошла ошибка" + System.lineSeparator());
+        testTxt("badtest7", "");
     }
 
     @Test
     void mainBad8() {
-        testTxt("badtest8", "Произошла ошибка" + System.lineSeparator());
+        testTxt("badtest8", "");
     }
 
     @Test
     void mainBad9() {
-        testTxt("badtest9", "Произошла ошибка" + System.lineSeparator());
+        testTxt("badtest9", "");
     }
 
     @Test
     void mainBad10() {
-        testTxt("badtest10", "Произошла ошибка" + System.lineSeparator());
+        testTxt("badtest10", "");
     }
 
     @Test
     void mainBad11() {
-        testTxt("badtest11", "Произошла ошибка" + System.lineSeparator());
+        testTxt("badtest11", "");
     }
 
-    @Test
-    void mainNoArgs() {
-        String[] args = {};
-
-        Main.main(args);
-        String template = "Неверные входные параметры" + System.lineSeparator();
-        assertEquals(template, output.toString());
-    }
-
-//    @Test
-//    void mainArgs() {
-//        String[] args = {"-txt", "-f", "rules.txt", "-c", "xml", "name", "XmlModel.xsd"};
-//
-//        Main.main(args);
-//        String template = "Неверные входные параметры" + System.lineSeparator();
-//        assertEquals(template, output.toString());
-//    }
 
     void testTxt(String filename, String template) {
-        String[] args = {"-itype=txt", "-ifile=" + testDir.getAbsolutePath() + File.separator + filename + ".txt", "-d"};
+        String[] args = {"-itxt", "-ifile", testDir.getAbsolutePath() + File.separator + filename + ".txt", "-d"};
 
         Main.main(args);
 
@@ -162,7 +154,7 @@ class TestMain {
     }
 
     void testXml(String filename, String template) {
-        String[] args = {"-itype=xml", "-ifile=" + testDir.getAbsolutePath() + File.separator + filename + ".xml", "-d"};
+        String[] args = {"-ixml", "-ifile", testDir.getAbsolutePath() + File.separator + filename + ".xml", "-d"};
 
         Main.main(args);
 
@@ -170,7 +162,7 @@ class TestMain {
     }
 
     void testSQL(String model, String template) {
-        String[] args = {"-itype=sql", "-imodel=name", "-ifile=" + "resources/SQLConfiguration.xml", "-d"};
+        String[] args = {"-isql", model, "-ifile", "resources/SQLConfiguration.xml", "-d"};
 
         Main.main(args);
 

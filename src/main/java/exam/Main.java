@@ -1,94 +1,95 @@
 package exam;
 
 import org.apache.commons.cli.*;
-import org.apache.ibatis.exceptions.PersistenceException;
-
-import java.util.Iterator;
-import java.util.Properties;
-import java.util.Set;
 
 public class Main {
 
     private static Options makeOptions() {
         Options options = new Options();
+        Option iFile = new Option("ifile", true, "name of input file");
+        iFile.setArgName("filename");
+        iFile.setOptionalArg(false);
+        iFile.setRequired(true);
+        options.addOption(iFile);
 
-        OptionGroup type = new OptionGroup();
-        Option i = new Option("i", true, "input");
-        i.setArgs(3);
-        i.setArgName("property=value");
-        i.setOptionalArg(false);
-        type.addOption(i);
-        type.setRequired(true);
-        options.addOptionGroup(type);
+        OptionGroup inputType = new OptionGroup();
+        inputType.addOption(new Option("itxt", false, "txt input format"));
+        inputType.addOption(new Option("ixml", false, "xml input format"));
+        Option iSql = new Option("isql", true, "sql input format");
+        iSql.setArgName("modelName");
+        iSql.setOptionalArg(false);
+        inputType.addOption(iSql);
+        inputType.setRequired(true);
+        options.addOptionGroup(inputType);
 
-        Option o = new Option("o", true, "output");
-        o.setArgName("property=value");
-        o.setArgs(3);
-        options.addOption(o);
+        Option oFile = new Option("ofile", true, "name of output file");
+        oFile.setRequired(false);
+        oFile.setArgName("filename");
+        oFile.setOptionalArg(false);
+        options.addOption(oFile);
+
+        OptionGroup outputType = new OptionGroup();
+        outputType.addOption(new Option("oxml", false, "xml output format"));
+        Option oSql = new Option("osql", true, "sql output format");
+        oSql.setArgName("modelName");
+        oSql.setOptionalArg(false);
+        outputType.addOption(oSql);
+        options.addOptionGroup(outputType);
 
         OptionGroup action = new OptionGroup();
-        action.addOption(new Option("d", false, "deduce"));
-        Option c = new Option("c", false, "convert");
-        action.addOption(c);
-        action.setRequired(true);
+        action.addOption(new Option("d", false, "deduce and print all facts"));
+        action.addOption(new Option("c", false, "convert format to other format"));
         options.addOptionGroup(action);
+
+        options.addOption(new Option("help", false, "help"));
         return options;
     }
 
-    public static void main(String[] args) throws PersistenceException {
-
+    public static void main(String[] args) {
+        Options options = makeOptions();
+        CommandLine cmd;
         try {
             CommandLineParser cmdParser = new DefaultParser();
-            CommandLine cmd = cmdParser.parse(makeOptions(), args);
-            Properties input = cmd.getOptionProperties("i");
-            Engine.Type inputType = null;
-            if (input.getProperty("type").equals("txt")) {
-                inputType = Engine.Type.Txt;
-            }
-            if (input.getProperty("type").equals("xml")) {
-                inputType = Engine.Type.Xml;
-            }
-            if (input.getProperty("type").equals("sql")) {
-                inputType = Engine.Type.Sql;
-            }
-            Engine engine = new Engine();
-            if (cmd.hasOption("d")) {
-                Set<String> fullFacts = engine.deduce(inputType, input.getProperty("file"), input.getProperty("model"));
-                System.out.print(makeFullFactsString(fullFacts));
-                return;
-            }
-            if (cmd.hasOption("c")) {
-                Properties output = cmd.getOptionProperties("o");
-                Engine.Type outputType = null;
-                if (output.getProperty("type").equals("xml")) {
-                    outputType = Engine.Type.Xml;
-                }
-                if (output.getProperty("type").equals("sql")) {
-                    outputType = Engine.Type.Sql;
-                }
-                engine.convert(inputType, outputType, input.getProperty("file"), input.getProperty("model"), output.getProperty("file"), output.getProperty("model"));
-
-            }
-
+            cmd = cmdParser.parse(options, args);
         } catch (ParseException e) {
             System.out.println("Неверные входные параметры");
-        } catch (NullPointerException e) {
-            System.out.println("Произошла ошибка");
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("rules", options);
+            return;
+        }
+        if (cmd.hasOption("help")) {
+            HelpFormatter formatter = new HelpFormatter();
+            formatter.printHelp("rules", options);
+            return;
+        }
+        Engine.Type inputType = null;
+        if (cmd.hasOption("itxt")) {
+            inputType = Engine.Type.Txt;
+        } else if (cmd.hasOption("ixml")) {
+            inputType = Engine.Type.Xml;
+        } else if (cmd.hasOption("isql")) {
+            inputType = Engine.Type.Sql;
+        }
+        Presenter presenter = new CMDPresenter();
+        Engine engine = new Engine(presenter);
+        if (cmd.hasOption("d")) {
+            engine.deduce(inputType, cmd.getOptionValue("ifile"), cmd.getOptionValue("isql"));
+            return;
+        }
+        if (cmd.hasOption("c")) {
+            Engine.Type outputType;
+            if (cmd.hasOption("oxml")) {
+                outputType = Engine.Type.Xml;
+            } else if (cmd.hasOption("osql")) {
+                outputType = Engine.Type.Sql;
+            } else {
+                System.err.println("Missing output file format!");
+                return;
+            }
+            engine.convert(inputType, outputType, cmd.getOptionValue("ifile"), cmd.getOptionValue("osql"), cmd.getOptionValue("ofile"), cmd.getOptionValue("osql"));
         }
 
-    }
 
-    private static String makeFullFactsString(Set<String> facts) {
-        Iterator<String> fi = facts.iterator();
-        String fullFacts = "";
-        if (fi.hasNext())
-            fullFacts = fullFacts.concat(fi.next());
-
-        while (fi.hasNext()) {
-            fullFacts = fullFacts.concat(", ");
-            fullFacts = fullFacts.concat(fi.next());
-        }
-        return fullFacts;
     }
 }
 

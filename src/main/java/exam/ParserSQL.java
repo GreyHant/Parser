@@ -10,7 +10,7 @@ import java.util.Set;
 public class ParserSQL implements Parser {
 
     @Override
-    public Model parse(String fileName, String modelName) throws IOException {
+    public Model parse(String fileName, String modelName) throws IOException, FormatException {
 
         try (SqlSession session = SQLConnector.openSession(fileName)) {
             ModelMapper mapper = session.getMapper(ModelMapper.class);
@@ -27,7 +27,7 @@ public class ParserSQL implements Parser {
         }
     }
 
-    private Expression makeExpression(ModelMapper mapper, DBExpression dbExpression) {
+    private Expression makeExpression(ModelMapper mapper, DBExpression dbExpression) throws FormatException {
         List<DBExpression> childExpressions = mapper.getChildExpressions(dbExpression.getIdExpr());
         Expression expression = null;
         List<Expression> expressionList = new ArrayList<>();
@@ -45,7 +45,10 @@ public class ParserSQL implements Parser {
                 expression = new AndExpression(expressionList);
                 break;
             case "fact":
-                expression = new FactExpression(dbExpression.getFact());
+                String fact = dbExpression.getFact();
+                if (fact.matches("_*\\p{IsAlphabetic}+[\\p{IsAlphabetic}_\\d]*"))
+                    expression = new FactExpression(fact);
+                else throw new FormatException("Ошибка формата в базе данных: " + fact);
                 break;
         }
         return expression;

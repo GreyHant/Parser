@@ -14,7 +14,7 @@ public class FactExpression implements Expression {
     }
 
     @Override
-    public void Serialize(Serializer s) {
+    public void Serialize(Serializer s) throws SerializationException {
         s.SerializeFactExpression(fact);
     }
 

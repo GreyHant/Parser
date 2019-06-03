@@ -26,10 +26,8 @@ public class Model {
     }
 
 
-    void Serialize(Serializer s)
-    {
-        s.SerializeRules(rules);
-        s.SerializeKnownFacts(facts);
+    void Serialize(Serializer s) throws SerializationException {
+        s.SerializeModel(rules, facts);
     }
 
     public Set<String> deduce() {

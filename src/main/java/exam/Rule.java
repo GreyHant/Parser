@@ -43,10 +43,10 @@ public class Rule {
         return "Rule{" +
                 expression.toString() +
                 ", resultFact='" + resultFact + '\'' +
-                '}'+System.lineSeparator();
+                '}' + System.lineSeparator();
     }
 
-    void Serialize(Serializer s){
+    void Serialize(Serializer s) throws SerializationException {
         s.SerializeRule(expression, resultFact);
     }
 

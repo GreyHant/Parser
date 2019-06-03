@@ -4,11 +4,9 @@ import java.util.Collection;
 
 interface Serializer
 {
-    void SerializeRules(Collection<Rule> rules);
-    void SerializeKnownFacts(Collection<String> facts);
-    void SerializeRule(Expression expression, String resultFact);
-    void SerializeOrExpression(Collection<Expression> expressions);
-    void SerializeAndExpression(Collection<Expression> expressions);
-    void SerializeFactExpression(String fact);
-
+    void SerializeModel(Collection<Rule> rules, Collection<String> knownFacts) throws SerializationException;
+    void SerializeRule(Expression expression, String resultFact) throws SerializationException;
+    void SerializeOrExpression(Collection<Expression> expressions) throws SerializationException;
+    void SerializeAndExpression(Collection<Expression> expressions) throws SerializationException;
+    void SerializeFactExpression(String fact) throws SerializationException;
 }

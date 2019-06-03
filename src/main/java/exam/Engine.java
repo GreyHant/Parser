@@ -1,49 +1,48 @@
 package exam;
 
+import org.apache.ibatis.exceptions.PersistenceException;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
-import java.util.Set;
 
 public class Engine {
 
     public enum Type {Txt, Xml, Sql}
 
-    public Set<String> deduce(Type type, String inputFileName, String inputModelName) {
-        Parser parser = makeParser(type);
-        Model model = null;
-        try {
-            model = parser.parse(inputFileName, inputModelName);
-        } catch (IOException e) {
-            System.err.println("Ошибка при работе с файлом");
-        } catch (InputException e) {
-            System.err.println(e.getProblem());
-        } catch (JAXBException | SAXException e) {
-            System.err.println("Ошибка при работе с хml");
-        }
+    private Presenter presenter;
 
-        return model.deduce();
+    public Engine(Presenter presenter) {
+        this.presenter = presenter;
     }
 
-    public boolean convert(Type inputType, Type outputType, String inputFileName, String inputModelName, String outputFileName, String outputModelName) {
-        Parser parser = makeParser(inputType);
+    public void deduce(Type type, String inputFileName, String inputModelName) {
         try {
+            Parser parser = createParser(type);
             Model model = parser.parse(inputFileName, inputModelName);
-            Writer writer = makeWriter(outputType);
-            writer.write(outputFileName, model, outputModelName);
-        } catch (IOException e) {
-            System.err.println("Ошибка при работе с файлом");
-        } catch (InputException e) {
-            System.err.println(e.getProblem());
-        } catch (JAXBException | SAXException e) {
-            System.err.println("Ошибка при работе с хml");
+            presenter.showResult(model.deduce());
+        } catch (IOException | JAXBException | SAXException | PersistenceException e) {
+            presenter.showError(e.toString());
+        } catch (FormatException | IllegalStateException e) {
+            presenter.showError(e.getMessage());
         }
-        return true;
     }
 
-    private Writer makeWriter(Type type) {
-        Writer writer = null;
+    public void convert(Type inputType, Type outputType, String inputFileName, String inputModelName, String outputFileName, String outputModelName) {
+        try {
+            Parser parser = createParser(inputType);
+            Model model = parser.parse(inputFileName, inputModelName);
+            Writer writer = createWriter(outputType);
+            writer.write(outputFileName, model, outputModelName);
+        } catch (IOException | JAXBException | SAXException | PersistenceException e) {
+            presenter.showError(e.toString());
+        } catch (FormatException | IllegalStateException | SerializationException e) {
+            presenter.showError(e.getMessage());
+        }
+    }
+
+    private Writer createWriter(Type type) {
+        Writer writer;
         switch (type) {
             case Xml:
                 writer = new WriterXml();
@@ -51,12 +50,14 @@ public class Engine {
             case Sql:
                 writer = new WriterSQL();
                 break;
+            default:
+                throw new IllegalStateException("Неизвестное значение типа: " + type);
         }
         return writer;
     }
 
-    private Parser makeParser(Type type) {
-        Parser parser = null;
+    private Parser createParser(Type type) {
+        Parser parser;
         switch (type) {
             case Txt:
                 parser = new ParserTxt();
@@ -67,6 +68,8 @@ public class Engine {
             case Sql:
                 parser = new ParserSQL();
                 break;
+            default:
+                throw new IllegalStateException("Неизвестное значение типа: " + type);
         }
         return parser;
     }

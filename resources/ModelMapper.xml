@@ -63,30 +63,26 @@
     </insert>
     <delete id="deleteModel">
         delete
-        from models
+        from rules.models
         where idmodel = #{idmodel}
     </delete>
     <delete id="deleteFacts">
         delete
-        from knownfacts
+        from rules.knownfacts
         where idmodel = #{model}
     </delete>
     <delete id="deleteRules">
         delete
-        from rules
+        from rules.rules
         where idmodel = #{model}
     </delete>
-    <delete id="deleteExpression">
+    <delete id="deleteExpressions">
         delete
-        from expressions
+        from rules.expressions
         where idexpr in
         <foreach collection="list" item="item" index="index" open="(" separator="," close=")">
             #{item}
         </foreach>
     </delete>
-    <delete id="deleteChildExpression">
-        delete
-        from expressions
-        where parent = #{parent}
-    </delete>
+
 </mapper>

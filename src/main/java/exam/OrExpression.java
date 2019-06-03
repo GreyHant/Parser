@@ -38,7 +38,7 @@ public class OrExpression implements Expression {
     }
 
     @Override
-    public void Serialize(Serializer s){
+    public void Serialize(Serializer s) throws SerializationException {
         s.SerializeOrExpression(expressionList);
     }
 }

@@ -6,5 +6,5 @@ public interface Expression {
 
     boolean evaluate(Set<String> allFacts);
 
-    void Serialize(Serializer s);
+    void Serialize(Serializer s) throws SerializationException;
 }

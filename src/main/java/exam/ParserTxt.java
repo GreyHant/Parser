@@ -25,7 +25,7 @@ public class ParserTxt implements Parser {
     private char[] charArray;
 
     @Override
-    public Model parse(String filePath, @Null String modelName) throws InputException, IOException {
+    public Model parse(String filePath, @Null String modelName) throws FormatException, IOException {
         BufferedReader br = new BufferedReader(new FileReader(filePath));
         List<Rule> rules = new ArrayList<>();
         Set<String> facts = null;
@@ -47,13 +47,13 @@ public class ParserTxt implements Parser {
                     parsingState = ParsingState.Finish;
                     break;
                 case Finish:
-                    throw new InputException(row);
+                    throw new FormatException(row);
             }
         }
         return new Model(facts, rules);
     }
 
-    private Rule parseRule(String line) throws InputException {
+    private Rule parseRule(String line) throws FormatException {
 
         charArray = line.toCharArray();
         StringBuilder resultFact = null;
@@ -80,14 +80,14 @@ public class ParserTxt implements Parser {
                     }
                     if (Character.isWhitespace(charArray[position]))
                         break;
-                    throw new InputException(row);
+                    throw new FormatException(row);
                 case UnderlineResultFact:
                     if (Character.isLetter(charArray[position]) || charArray[position] == '_') {
                         resultFact.append(charArray[position]);
                         ruleState = RuleState.ResultFact;
                         break;
                     }
-                    throw new InputException(row);
+                    throw new FormatException(row);
                 case ResultFact:
                     if (charArray[position] == '_' || Character.isLetterOrDigit(charArray[position])) {
                         resultFact.append(charArray[position]);
@@ -97,19 +97,19 @@ public class ParserTxt implements Parser {
                         ruleState = RuleState.AfterResultFact;
                         break;
                     }
-                    throw new InputException(row);
+                    throw new FormatException(row);
                 case AfterResultFact:
                     if (Character.isWhitespace(charArray[position]))
                         break;
-                    throw new InputException(row);
+                    throw new FormatException(row);
             }
         }
         if (ruleState == RuleState.ResultFact || ruleState == RuleState.AfterResultFact)
             return new Rule(expression, resultFact.toString());
-        throw new InputException(row);
+        throw new FormatException(row);
     }
 
-    private Expression parseExpression(boolean nestExpression) throws InputException {
+    private Expression parseExpression(boolean nestExpression) throws FormatException {
 
         List<Expression> andExpressionList = new ArrayList<>();
         List<Expression> orExpressionList = new ArrayList<>();
@@ -141,14 +141,14 @@ public class ParserTxt implements Parser {
                     if (Character.isWhitespace(charArray[position]))
                         break;
 
-                    throw new InputException(row);
+                    throw new FormatException(row);
                 case UnderlineFact:
                     if (Character.isLetter(charArray[position]) || charArray[position] == '_') {
                         fact.append(charArray[position]);
                         expressionState = ExpressionState.Fact;
                         break;
                     }
-                    throw new InputException(row);
+                    throw new FormatException(row);
                 case Fact:
                     if (charArray[position] == '_' || Character.isLetterOrDigit(charArray[position])) {
                         fact.append(charArray[position]);
@@ -170,7 +170,7 @@ public class ParserTxt implements Parser {
                         break;
                     }
                     if (charArray[position] == '-') {
-                        if (nestExpression) throw new InputException(row);
+                        if (nestExpression) throw new FormatException(row);
                         factExpression = new FactExpression(fact.toString());
                         expressionState = ExpressionState.Arrow;
                         break;
@@ -179,7 +179,7 @@ public class ParserTxt implements Parser {
                         factExpression = new FactExpression(fact.toString());
                         return makeExpression(andExpressionList, orExpressionList, factExpression);
                     }
-                    throw new InputException(row);
+                    throw new FormatException(row);
                 case BeforeOperation:
                     if (charArray[position] == '&') {
                         expressionState = ExpressionState.AndOperation;
@@ -193,21 +193,21 @@ public class ParserTxt implements Parser {
                         return makeExpression(andExpressionList, orExpressionList, factExpression);
                     }
                     if (charArray[position] == '-') {
-                        if (nestExpression) throw new InputException(row);
+                        if (nestExpression) throw new FormatException(row);
                         expressionState = ExpressionState.Arrow;
                         break;
                     }
                     if (Character.isWhitespace(charArray[position]))
                         break;
 
-                    throw new InputException(row);
+                    throw new FormatException(row);
                 case AndOperation:
                     if (charArray[position] == '&') {
                         andExpressionList.add(factExpression);
                         expressionState = ExpressionState.BeforeFact;
                         break;
                     }
-                    throw new InputException(row);
+                    throw new FormatException(row);
                 case OrOperation:
                     if (charArray[position] == '|') {
                         if (andExpressionList.isEmpty())
@@ -220,15 +220,15 @@ public class ParserTxt implements Parser {
                         expressionState = ExpressionState.BeforeFact;
                         break;
                     }
-                    throw new InputException(row);
+                    throw new FormatException(row);
                 case Arrow:
                     if (charArray[position] == '>') {
                         return makeExpression(andExpressionList, orExpressionList, factExpression);
                     }
-                    throw new InputException(row);
+                    throw new FormatException(row);
             }
         }
-        throw new InputException(row);
+        throw new FormatException(row);
     }
 
     private Expression makeExpression(List<Expression> andExpressionList, List<Expression> orExpressionList, Expression factExpression) {
@@ -245,7 +245,7 @@ public class ParserTxt implements Parser {
         return expression;
     }
 
-    public Set<String> parseFacts(String line) throws InputException {
+    public Set<String> parseFacts(String line) throws FormatException {
         char[] c = line.toCharArray();
         Set<String> facts = new HashSet<>();
         StringBuilder fact = null;
@@ -266,14 +266,14 @@ public class ParserTxt implements Parser {
                         break;
                     }
                     if (Character.isWhitespace(c[i])) break;
-                    throw new InputException(row);
+                    throw new FormatException(row);
                 case UnderlineFact:
                     if (Character.isLetter(c[i]) || c[i] == '_') {
                         fact.append(c[i]);
                         factState = FactsState.Fact;
                         break;
                     }
-                    throw new InputException(row);
+                    throw new FormatException(row);
                 case Fact:
                     if (c[i] == '_' || Character.isLetterOrDigit(c[i])) {
                         fact.append(c[i]);
@@ -296,13 +296,13 @@ public class ParserTxt implements Parser {
                         break;
                     }
                     if (Character.isWhitespace(c[i])) break;
-                    throw new InputException(row);
+                    throw new FormatException(row);
             }
         }
         if (fact.length() == 1 && Character.isLetter(fact.toString().charAt(0))) facts.add(fact.toString());
         if (factState == FactsState.Fact || factState == FactsState.BeforeComma)
             return facts;
-        throw new InputException(row);
+        throw new FormatException(row);
     }
 
 }
